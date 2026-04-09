@@ -44,5 +44,5 @@ class PrimaryClient:
         
         return {
             "content": content,
-            "model": "nexus-architect"  # Branded name
+            "model": "nex1-architect"  # Branded name
         }

@@ -96,13 +96,30 @@ if ($configBackup) {
 Write-Host ""
 Write-Host "    [4/6] Creating virtual environment..." -ForegroundColor Yellow
 
+# Kill any Python processes that might be using the venv
+Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "*$INSTALL_DIR*" } | Stop-Process -Force -ErrorAction SilentlyContinue
+
+# Wait a moment for processes to close
+Start-Sleep -Seconds 2
+
 # Remove old venv if it exists
 if (Test-Path "$INSTALL_DIR\venv") {
-    Remove-Item -Recurse -Force "$INSTALL_DIR\venv" -ErrorAction SilentlyContinue
+    try {
+        Remove-Item -Recurse -Force "$INSTALL_DIR\venv" -ErrorAction Stop
+    } catch {
+        Write-Host "          ⚠ Could not remove old venv, trying to continue..." -ForegroundColor Yellow
+    }
 }
 
-python -m venv "$INSTALL_DIR\venv" 2>&1 | Out-Null
-Write-Host "          ✓ Virtual environment created" -ForegroundColor Green
+# Create new venv
+try {
+    python -m venv "$INSTALL_DIR\venv" 2>&1 | Out-Null
+    Write-Host "          ✓ Virtual environment created" -ForegroundColor Green
+} catch {
+    Write-Host "          ✗ Failed to create virtual environment" -ForegroundColor Red
+    Write-Host "            Close any running Python processes and try again" -ForegroundColor DarkGray
+    exit 1
+}
 
 # Install dependencies
 Write-Host ""

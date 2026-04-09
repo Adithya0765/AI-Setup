@@ -28,7 +28,7 @@ def show_welcome():
     
     # Print logo
     console.print(logo, style="bold cyan")
-    console.print("    Self-Evolving AI Coding Intelligence", style="dim cyan")
+    console.print("    Powered by NEX1 - Advanced AI Model", style="dim cyan")
     console.print()
     
     # Welcome message

@@ -1,13 +1,13 @@
 # NEXUS - Self-Evolving AI Coding Assistant
 
-A multi-model AI coding system that understands repos, plans tasks, executes changes, and learns from experience.
+A multi-model AI coding system powered by NEX1, our advanced AI model that understands repos, plans tasks, executes changes, and learns from experience.
 
 ## What is NEXUS?
 
-NEXUS is a CLI tool that uses AI to help you code. It's designed as a SaaS where users never manage API keys - everything is handled on the backend.
+NEXUS is a CLI tool that uses the NEX1 AI model to help you code. It's designed as a SaaS where users never manage API keys - everything is handled on the backend.
 
 **Key Features:**
-- Multi-model AI (hidden from users as "architect/builder/validator" modes)
+- Powered by NEX1 advanced AI model
 - Self-improving strategy engine
 - Learns from past executions
 - Simple CLI interface like Claude Code

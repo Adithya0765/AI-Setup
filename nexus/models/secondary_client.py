@@ -37,9 +37,21 @@ class SecondaryClient:
                 headers=headers,
                 json=payload
             ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    raise Exception(f"Grok API error: {response.status} - {error_text}")
+                
                 data = await response.json()
                 
+                # Handle response format
+                if "choices" in data and len(data["choices"]) > 0:
+                    content = data["choices"][0]["message"]["content"]
+                elif "content" in data:
+                    content = data["content"]
+                else:
+                    raise Exception(f"Unexpected Grok API response format: {data}")
+                
                 return {
-                    "content": data["choices"][0]["message"]["content"],
-                    "model": "nexus-builder"  # Branded name
+                    "content": content,
+                    "model": "nex1-builder"  # Branded name
                 }
