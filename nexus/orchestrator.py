@@ -51,36 +51,26 @@ class Orchestrator:
         """Execute locally with own API keys (dev mode)"""
         
         # Step 1: Retrieve context
-        yield {"type": "step", "message": "Retrieving repo context..."}
+        yield {"type": "step", "message": "Analyzing task..."}
         context = await self._get_context(task)
         
         # Step 2: Get relevant strategies
         strategies = await self.strategy.get_relevant(task)
         
         # Step 3: Plan
-        yield {"type": "step", "message": "Planning approach..."}
+        yield {"type": "step", "message": "Creating plan..."}
         plan = await self.planner.create_plan(task, context, strategies)
         
-        # Step 4: Execute steps
+        # Step 4: Execute all steps (no evaluation per step to save API calls)
         results = []
         for i, step in enumerate(plan["steps"], 1):
-            yield {"type": "step", "message": f"Step {i}/{len(plan['steps'])}: {step['description']}"}
+            yield {"type": "step", "message": f"Executing step {i}/{len(plan['steps'])}: {step['description']}"}
             
             result = await self.executor.execute_step(step, context)
             results.append(result)
-            
-            # Evaluate after each step
-            evaluation = await self.evaluator.evaluate(step, result)
-            
-            if not evaluation["success"]:
-                # Retry with refinement
-                yield {"type": "step", "message": f"Refining step {i}..."}
-                refined_step = await self.planner.refine_step(step, evaluation)
-                result = await self.executor.execute_step(refined_step, context)
-                results[-1] = result
         
-        # Step 5: Final evaluation
-        yield {"type": "step", "message": "Evaluating results..."}
+        # Step 5: Final evaluation only (saves API calls)
+        yield {"type": "step", "message": "Validating results..."}
         final_eval = await self.evaluator.evaluate_final(task, results)
         
         # Step 6: Store learning

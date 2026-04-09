@@ -3,19 +3,17 @@ python-dotenv>=1.0.0
 pydantic>=2.0.0
 rich>=13.0.0
 
-# AI Models
-google-generativeai>=0.3.0
-anthropic>=0.18.0
+# HTTP Client
+aiohttp>=3.9.0
 
-# Code Analysis
+# Code Analysis (for future features)
 tree-sitter>=0.20.0
 tree-sitter-python>=0.20.0
 
-# Vector DB
+# Vector DB (for future features)
 faiss-cpu>=1.7.4
 sentence-transformers>=2.2.0
 
 # Utilities
-aiohttp>=3.9.0
 gitpython>=3.1.0
 docker>=7.0.0
