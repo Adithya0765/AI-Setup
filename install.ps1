@@ -49,15 +49,16 @@ Write-Host "📥 Downloading NEXUS..." -ForegroundColor Cyan
 
 # Clean up any previous installation attempts
 if (Test-Path "$INSTALL_DIR\nexus-repo") {
-    Write-Host "  Cleaning up previous installation..." -ForegroundColor Yellow
-    Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo"
+    Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo" -ErrorAction SilentlyContinue
 }
 
 Set-Location $INSTALL_DIR
-$gitOutput = git clone --depth 1 $REPO_URL nexus-repo 2>&1
-if ($LASTEXITCODE -ne 0) {
+
+# Use Start-Process to avoid stderr issues
+$process = Start-Process -FilePath "git" -ArgumentList "clone","--quiet","--depth","1",$REPO_URL,"nexus-repo" -Wait -PassThru -NoNewWindow
+if ($process.ExitCode -ne 0) {
     Write-Host "  ❌ Failed to download NEXUS" -ForegroundColor Red
-    Write-Host "     Error: $gitOutput" -ForegroundColor Yellow
+    Write-Host "     Make sure the repository is public" -ForegroundColor Yellow
     exit 1
 }
 Write-Host "  ✓ Downloaded successfully" -ForegroundColor Green
