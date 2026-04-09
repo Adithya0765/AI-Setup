@@ -81,15 +81,32 @@ Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo"
 # Create virtual environment
 Write-Host ""
 Write-Host "    [4/6] Creating virtual environment..." -ForegroundColor Yellow
-python -m venv "$INSTALL_DIR\venv"
+
+# Remove old venv if it exists
+if (Test-Path "$INSTALL_DIR\venv") {
+    Remove-Item -Recurse -Force "$INSTALL_DIR\venv" -ErrorAction SilentlyContinue
+}
+
+python -m venv "$INSTALL_DIR\venv" 2>&1 | Out-Null
 Write-Host "          ✓ Virtual environment created" -ForegroundColor Green
 
 # Install dependencies
 Write-Host ""
 Write-Host "    [5/6] Installing dependencies..." -ForegroundColor Yellow
-& "$INSTALL_DIR\venv\Scripts\python.exe" -m pip install --upgrade pip --quiet
-& "$INSTALL_DIR\venv\Scripts\pip.exe" install -r "$INSTALL_DIR\requirements.txt" --quiet
-& "$INSTALL_DIR\venv\Scripts\pip.exe" install -e "$INSTALL_DIR" --quiet
+
+# Use full paths and wait for completion
+$pythonExe = "$INSTALL_DIR\venv\Scripts\python.exe"
+$pipExe = "$INSTALL_DIR\venv\Scripts\pip.exe"
+
+# Upgrade pip first
+& $pythonExe -m pip install --upgrade pip --quiet 2>&1 | Out-Null
+
+# Install requirements
+& $pythonExe -m pip install -r "$INSTALL_DIR\requirements.txt" --quiet 2>&1 | Out-Null
+
+# Install package in editable mode
+& $pythonExe -m pip install -e "$INSTALL_DIR" --quiet 2>&1 | Out-Null
+
 Write-Host "          ✓ Dependencies installed" -ForegroundColor Green
 
 # Create executable wrapper
