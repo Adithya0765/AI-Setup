@@ -46,9 +46,11 @@ Write-Host "  ✓ Created directories" -ForegroundColor Green
 # Clone repository
 Write-Host ""
 Write-Host "📥 Downloading NEXUS..." -ForegroundColor Cyan
-if (Test-Path "$INSTALL_DIR\nexus") {
-    Write-Host "  Removing old installation..." -ForegroundColor Yellow
-    Remove-Item -Recurse -Force "$INSTALL_DIR\nexus"
+
+# Clean up any previous installation attempts
+if (Test-Path "$INSTALL_DIR\nexus-repo") {
+    Write-Host "  Cleaning up previous installation..." -ForegroundColor Yellow
+    Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo"
 }
 
 Set-Location $INSTALL_DIR
