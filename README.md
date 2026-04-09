@@ -1,209 +1,107 @@
-# Marketing AI Model Stack
+# NEXUS - Self-Evolving AI Coding Assistant
 
-State-of-the-art image, video, and audio generation models for automated marketing content.
+A multi-model AI coding system that understands repos, plans tasks, executes changes, and learns from experience.
 
-## Models
+## What is NEXUS?
 
-- **Image**: FLUX.1-dev (12B params)
-- **Video**: LTX-Video (4K, 60s, synchronized audio)
-- **Audio**: Fish Speech V1.5 (multilingual)
-- **Router**: Mistral 7B (intelligent routing)
+NEXUS is a CLI tool that uses AI to help you code. It's designed as a SaaS where users never manage API keys - everything is handled on the backend.
 
-## RECOMMENDED: AWS EC2 with Spot Instances (Best Value!)
+**Key Features:**
+- Multi-model AI (hidden from users as "architect/builder/validator" modes)
+- Self-improving strategy engine
+- Learns from past executions
+- Simple CLI interface like Claude Code
 
-### Why AWS EC2?
-- g5.xlarge spot: ~$0.35/hour (70% cheaper than on-demand)
-- 24GB GPU (A10G) - runs all models
-- Your $185 = 460-600 hours of GPU time
-- Pay only when running
-- Stop anytime to save money
+## Quick Start
 
-### Quick Start
+### Installation
 
-See **[aws_setup_guide.md](aws_setup_guide.md)** for detailed instructions.
-
-**Summary:**
-1. Launch g5.xlarge spot instance with Deep Learning AMI
-2. SSH into instance
-3. Run: `bash setup_aws_ec2.sh`
-4. Generate content!
-5. **STOP instance when done** (saves money!)
-
-**Manage from local machine:**
+**Linux/Mac:**
 ```bash
-# Edit aws_ec2_manager.sh with your instance ID
-chmod +x aws_ec2_manager.sh
-
-# Start instance
-./aws_ec2_manager.sh start
-
-# Connect
-./aws_ec2_manager.sh connect
-
-# Stop (IMPORTANT!)
-./aws_ec2_manager.sh stop
+curl -fsSL https://nexus.ai/install.sh | bash
 ```
 
----
-
-## ALTERNATIVE: Use Modal + Your HuggingFace Account
-
-### Step 1: Setup
-
-```bash
-# Install Modal
-pip install modal
-
-# Create Modal account (opens browser)
-modal token new
-
-# Add your HuggingFace token to Modal (needs WRITE access)
-modal secret create huggingface-secret HF_TOKEN=hf_your_token_here
+**Windows:**
+```powershell
+iex (iwr -Uri "https://nexus.ai/install.ps1").Content
 ```
 
-Get your HF token from: https://huggingface.co/settings/tokens (make sure it has WRITE permission)
-
-### Step 2: Copy Models to YOUR HuggingFace Account (One-time)
+### Usage
 
 ```bash
-# Use Modal's fast network to copy models to your HF account
-modal run modal_copy_to_hf.py --username YOUR_HF_USERNAME
+# Try it free - 5 prompts, no signup needed
+nexus "list all Python files"
+
+# Create account for 50 prompts/month (free)
+nexus --signup
+
+# Upgrade to Pro for unlimited
+nexus --upgrade
 ```
 
-Replace `YOUR_HF_USERNAME` with your actual HuggingFace username.
+## Pricing
 
-This copies ~57GB of models using Modal's datacenter network (10-20 minutes):
-- FLUX.1-dev → `your-username/FLUX.1-dev`
-- LTX-Video → `your-username/LTX-Video`
-- Fish Speech V1.5 → `your-username/fish-speech-1.5`
-- Mistral 7B → `your-username/Mistral-7B-Instruct-v0.2`
-
-Now you OWN these models in your HF account!
-
-### Step 3: Deploy Inference System
-
-```bash
-# Deploy inference that uses YOUR models
-modal deploy modal_inference_from_hf.py
-```
-
-### Step 4: Generate Content
-
-```bash
-# Generate using YOUR models
-modal run modal_inference_from_hf.py --username YOUR_HF_USERNAME --request "Create a professional product photo for a smartphone"
-
-# More examples
-modal run modal_inference_from_hf.py --username YOUR_HF_USERNAME --request "Social media ad for energy drink"
-modal run modal_inference_from_hf.py --username YOUR_HF_USERNAME --request "Product demo video for wireless headphones"
-```
+- **Try Free**: 5 prompts (no signup)
+- **Free Tier**: 50 prompts/month
+- **Pro**: $29/month - Unlimited
+- **Enterprise**: Custom pricing
 
 ## Architecture
 
 ```
-User Request
-    ↓
-Mistral Router (Langflow)
-    ↓
-┌───────────┬──────────────┬─────────────┐
-│   FLUX    │  LTX Video   │ Fish Speech │
-│  (Image)  │   (Video)    │   (Audio)   │
-└───────────┴──────────────┴─────────────┘
-    ↓
-Content Compositor
-    ↓
-Final Marketing Asset
+CLI → Backend API → AI Key Pool → Gemini/Grok
 ```
 
-## Next Steps
+Users interact with the CLI. Backend manages authentication, usage tracking, and AI orchestration.
 
-1. Prepare your training datasets (images, videos, audio)
-2. Run the download script to copy models to your HF account
-3. Set up Modal and deploy the fine-tuning functions
-4. Fine-tune each model on your marketing content
-5. Set up Langflow for orchestration
+## Documentation
 
-## Notes
+- **[QUICKSTART.md](QUICKSTART.md)** - User guide for the CLI
+- **[TEST_CLI_NOW.md](TEST_CLI_NOW.md)** - How to test the CLI locally
+- **[BACKEND.md](BACKEND.md)** - Backend implementation guide
+- **[SAAS_MODEL.md](SAAS_MODEL.md)** - Business model and pricing
 
-- FLUX.1-dev is the open-source version (FLUX.2 Pro is API-only)
-- LTX-2.3 supports native audio generation
-- Fish Speech V1.5 has best quality for voiceovers
-- All models support LoRA fine-tuning for efficiency
+## Current Status
 
+**Phase 1 (Complete):**
+- ✅ CLI structure
+- ✅ Orchestrator with planner/executor/evaluator agents
+- ✅ Model abstraction (architect/builder/validator)
+- ✅ Memory and strategy systems
+- ✅ Rate limiting with key rotation
 
-## Usage Examples
+**Phase 2 (Next):**
+- 🚧 Backend API (FastAPI)
+- 🚧 Authentication system
+- 🚧 Usage tracking
+- 🚧 Stripe integration
 
-```python
-from router_system import MarketingRouter
+## For Developers
 
-router = MarketingRouter()
+### Testing Locally
 
-# Example 1: Social media ad
-results = router.generate_content(
-    "Create a vibrant Instagram ad for a new energy drink"
-)
+1. Clone the repo
+2. Add your API keys to `.env` (2-3 keys per provider, comma-separated)
+3. Run `python demo.py` to see the UI
+4. Run `python test_cli.py` to test functionality
 
-# Example 2: Product video
-results = router.generate_content(
-    "Generate a 30-second product demo video for wireless headphones with voiceover"
-)
+See [TEST_CLI_NOW.md](TEST_CLI_NOW.md) for detailed testing instructions.
 
-# Example 3: Just an image
-results = router.generate_content(
-    "Professional product photo of a smartwatch on a marble surface"
-)
-```
+### Building the Backend
 
-## Architecture
+See [BACKEND.md](BACKEND.md) for complete backend implementation guide including:
+- Database schema
+- API endpoints
+- Authentication flow
+- Usage tracking
+- Deployment guide
 
-```
-User Request
-    ↓
-Mistral Router (analyzes request)
-    ↓
-Decides: Image? Video? Audio?
-    ↓
-┌───────────┬──────────────┬─────────────┐
-│   FLUX    │  LTX Video   │ Fish Speech │
-│  (Image)  │   (Video)    │   (Audio)   │
-└───────────┴──────────────┴─────────────┘
-    ↓
-Generated Content
-```
+## License
 
-## Costs
+MIT
 
-### Local (Your GPU):
-- Free (but requires powerful GPU: RTX 4090 or better)
-- ~57GB disk space
+## Support
 
-### Modal (Cloud):
-- A100 GPU: ~$1-3/hour
-- Only pay when generating
-- No upfront costs
-
-## When to Fine-tune?
-
-Start with base models. Fine-tune only if:
-- Client needs consistent brand style
-- Base models don't match desired output
-- You have 20+ high-quality examples
-
-See `modal_finetune_setup.py` for fine-tuning instructions.
-
-## Troubleshooting
-
-**Out of memory?**
-- Use Modal instead of local
-- Reduce batch size
-- Use smaller models
-
-**Slow generation?**
-- Modal is faster than local
-- Models cache after first run
-- Consider using FLUX.1-schnell (faster variant)
-
-**Poor quality output?**
-- Improve prompts (be specific)
-- Adjust inference steps (50-100)
-- Try different guidance scales (7-15)
+- Documentation: https://docs.nexus.ai
+- Support: support@nexus.ai
+- Community: https://community.nexus.ai

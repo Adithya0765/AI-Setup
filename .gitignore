@@ -1,1 +1,24 @@
-venv
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# NEXUS
+.nexus/
+*.nexus.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Docker
+.docker/
