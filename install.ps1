@@ -58,10 +58,19 @@ Write-Host "          ✓ Created installation directories" -ForegroundColor Gre
 Write-Host ""
 Write-Host "    [3/6] Downloading NEXUS from GitHub..." -ForegroundColor Yellow
 
-# Clean up any previous installation attempts
+# Clean up any previous installation
 if (Test-Path "$INSTALL_DIR\nexus-repo") {
     Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo" -ErrorAction SilentlyContinue
 }
+
+# Remove old installation files (keep config.env if it exists)
+$configBackup = $null
+if (Test-Path "$INSTALL_DIR\config.env") {
+    $configBackup = Get-Content "$INSTALL_DIR\config.env" -Raw
+}
+
+# Clean install directory except config
+Get-ChildItem -Path $INSTALL_DIR -Exclude "config.env" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
 
 Set-Location $INSTALL_DIR
 
@@ -75,8 +84,13 @@ if ($process.ExitCode -ne 0) {
 Write-Host "          ✓ Downloaded successfully" -ForegroundColor Green
 
 # Move files
-Move-Item -Force "$INSTALL_DIR\nexus-repo\*" "$INSTALL_DIR\"
-Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo"
+Move-Item -Force "$INSTALL_DIR\nexus-repo\*" "$INSTALL_DIR\" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$INSTALL_DIR\nexus-repo" -ErrorAction SilentlyContinue
+
+# Restore config if it existed
+if ($configBackup) {
+    Set-Content -Path "$INSTALL_DIR\config.env" -Value $configBackup
+}
 
 # Create virtual environment
 Write-Host ""
