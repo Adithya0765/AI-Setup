@@ -18,51 +18,50 @@ class CLI:
     
     async def execute_task(self, task: str):
         """Execute a single task"""
-        self.console.print(Panel(
-            f"[bold]Task:[/bold] {task}",
-            title="NEXUS Starting",
-            border_style="cyan"
-        ))
         
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=self.console
         ) as progress:
-            task_id = progress.add_task("Analyzing...", total=None)
+            task_id = progress.add_task("Working...", total=None)
             
             async for update in self.orchestrator.execute(task):
-                progress.update(task_id, description=update["message"])
-                
                 if update["type"] == "step":
-                    self.console.print(f"  → {update['message']}")
+                    progress.update(task_id, description=update['message'])
                 elif update["type"] == "result":
-                    self.console.print(Panel(
-                        update["content"],
-                        title="Result",
-                        border_style="green"
-                    ))
+                    progress.stop()
+                    self.console.print(f"\n{update['content']}")
                 elif update["type"] == "error":
-                    self.console.print(Panel(
-                        update["content"],
-                        title="Error",
-                        border_style="red"
-                    ))
+                    progress.stop()
+                    self.console.print(f"\n[red]Error:[/red] {update['content']}")
+                elif update["type"] == "info":
+                    progress.stop()
+                    self.console.print(f"[dim]{update['content']}[/dim]")
     
     async def interactive_mode(self):
-        """Interactive REPL mode"""
-        self.console.print("[bold cyan]NEXUS Interactive Mode[/bold cyan]")
-        self.console.print("Type 'exit' to quit\n")
+        """Interactive REPL mode - like Claude Code"""
         
         while True:
             try:
-                task = self.console.input("[bold green]nexus>[/bold green] ")
-                if task.lower() in ["exit", "quit"]:
+                task = self.console.input("\n[bold cyan]nexus>[/bold cyan] ")
+                
+                if task.lower() in ["exit", "quit", "/exit", "/quit"]:
+                    self.console.print("\n[yellow]Goodbye![/yellow]")
                     break
-                if task.strip():
-                    await self.execute_task(task)
+                
+                if not task.strip():
+                    continue
+                
+                # Execute the task
+                await self.execute_task(task)
+                
             except EOFError:
+                self.console.print("\n[yellow]Goodbye![/yellow]")
                 break
+            except KeyboardInterrupt:
+                self.console.print("\n[yellow]Use 'exit' to quit[/yellow]")
+                continue
     
     async def show_status(self):
         """Show system status"""
