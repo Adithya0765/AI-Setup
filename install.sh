@@ -4,7 +4,7 @@
 
 set -e
 
-REPO_URL="https://github.com/YOUR_USERNAME/nexus"  # TODO: Update with your GitHub username
+REPO_URL="https://github.com/Adithya0765/AI-Setup"
 INSTALL_DIR="$HOME/.nexus"
 BIN_DIR="$HOME/.local/bin"
 

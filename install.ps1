@@ -3,7 +3,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$REPO_URL = "https://github.com/YOUR_USERNAME/nexus"  # TODO: Update with your GitHub username
+$REPO_URL = "https://github.com/Adithya0765/AI-Setup"
 $INSTALL_DIR = "$env:USERPROFILE\.nexus"
 $BIN_DIR = "$env:USERPROFILE\.local\bin"
 
