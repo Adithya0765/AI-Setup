@@ -52,10 +52,10 @@ if (Test-Path "$INSTALL_DIR\nexus") {
 }
 
 Set-Location $INSTALL_DIR
-git clone --depth 1 $REPO_URL nexus-repo 2>&1 | Out-Null
+$gitOutput = git clone --depth 1 $REPO_URL nexus-repo 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Host "  ❌ Failed to download NEXUS" -ForegroundColor Red
-    Write-Host "     Make sure the repository is public" -ForegroundColor Yellow
+    Write-Host "     Error: $gitOutput" -ForegroundColor Yellow
     exit 1
 }
 Write-Host "  ✓ Downloaded successfully" -ForegroundColor Green
