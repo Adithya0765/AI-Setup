@@ -36,9 +36,9 @@ class PrimaryClient:
             )
             content = response.text
         else:
-            # Old google.generativeai API - use latest model
+            # Old google.generativeai API - use latest fast model
             genai.configure(api_key=api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')  # Updated model name
+            model = genai.GenerativeModel('models/gemini-2.5-flash')
             response = model.generate_content(full_prompt)
             content = response.text
         
